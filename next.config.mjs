@@ -18,7 +18,7 @@ const nextConfig = {
     // Define script-src directive
     const scriptSrc = process.env.NODE_ENV === 'development'
       ? `'self' 'nonce-${nonce}' 'unsafe-eval'`
-      : `'self' 'nonce-${nonce}'`;
+      : `'self' 'nonce-${nonce}' 'unsafe-eval'`;
 
     // Define style-src directive, ensuring nonce is included
     const styleSrc = `'self' 'nonce-${nonce}'`;
