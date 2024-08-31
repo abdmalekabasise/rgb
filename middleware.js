@@ -8,18 +8,13 @@ export function middleware(req) {
 
     const response = NextResponse.next();
 
-    // Properly format the CSP header without line breaks
+    // Set the Content Security Policy header
     response.headers.set(
         'Content-Security-Policy',
-        `default-src 'self'; img-src 'self' data: https://cdn.jsdelivr.net; font-src 'self' data:; script-src 'self' 'nonce-${nonce}'; style-src 'self'; connect-src 'self';`
+        `default-src 'self'; img-src 'self' data: https://cdn.jsdelivr.net; font-src 'self' data:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' http://localhost:5000;`
     );
 
-    const ContentSecurityPolicy = `
-  default-src 'self';
-  script-src 'self' 'nonce-FYKuIBaJPajQ8JczO8jirA==' 'unsafe-eval';
-  ...
-`;
-
+    // Set the nonce in a custom header for potential client-side use
     response.headers.set('X-NONCE', nonce);
 
     return response;
