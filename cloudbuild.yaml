@@ -1,0 +1,23 @@
+steps:
+  # Build the Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/xhibiter-repo/xhibiter-image:$COMMIT_SHA'
+      - '.'
+
+  # Push the image to Google Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'us-central1-docker.pkg.dev/$PROJECT_ID/xhibiter-repo/xhibiter-image:$COMMIT_SHA']
+
+  # Deploy the image to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args: ['run', 'deploy', 'xhibiter',
+           '--image', 'us-central1-docker.pkg.dev/$PROJECT_ID/xhibiter-repo/xhibiter-image:$COMMIT_SHA',
+           '--region', 'us-central1',
+           '--platform', 'managed',
+           '--allow-unauthenticated']
+images:
+  - 'us-central1-docker.pkg.dev/$PROJECT_ID/xhibiter-repo/xhibiter-image:$COMMIT_SHA'
