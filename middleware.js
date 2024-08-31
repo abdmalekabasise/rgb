@@ -11,9 +11,8 @@ export function middleware(req) {
     // Properly format the CSP header without line breaks
     response.headers.set(
         'Content-Security-Policy',
-        `default-src 'self'; img-src 'self' data: https://cdn.jsdelivr.net; font-src 'self' data:; script-src 'self' 'nonce-${nonce}' 'unsafe-eval'; style-src 'self' 'nonce-${nonce}'; connect-src 'self' http://localhost:5000;`
+        `default-src 'self'; img-src 'self' data: https://cdn.jsdelivr.net; font-src 'self' data:; script-src 'self' 'nonce-${nonce}'; style-src 'self' 'unsafe-inline'; connect-src 'self';`
     );
-
 
     const ContentSecurityPolicy = `
   default-src 'self';

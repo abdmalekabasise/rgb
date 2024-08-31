@@ -1,26 +1,40 @@
-import { NextResponse } from 'next/server';
+import crypto from 'crypto';
 
-export function middleware(req) {
-    // Generate a nonce using the Web Crypto API
-    const array = new Uint8Array(16);
-    crypto.getRandomValues(array);
-    const nonce = btoa(String.fromCharCode(...array));
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  reactStrictMode: true,
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "cdn.jsdelivr.net",
+        port: "",
+      },
+    ],
+  },
+  async headers() {
+    const nonce = crypto.randomBytes(16).toString('base64');
 
-    const response = NextResponse.next();
+    // Define script-src directive
+    const scriptSrc = process.env.NODE_ENV === 'development'
+      ? `'self' 'nonce-${nonce}' 'unsafe-eval'`
+      : `'self' 'nonce-${nonce}'`;
 
-    // Properly format the CSP header without line breaks
-    response.headers.set(
-        'Content-Security-Policy',
-        `default-src 'self'; img-src 'self' data: https://cdn.jsdelivr.net; font-src 'self' data:; script-src 'self' 'nonce-${nonce}'; style-src 'self' 'unsafe-inline'; connect-src 'self';`
-    );
+    // Define style-src directive, ensuring nonce is included
+    const styleSrc = `'self' 'nonce-${nonce}'`;
 
-    const ContentSecurityPolicy = `
-  default-src 'self';
-  script-src 'self' 'nonce-FYKuIBaJPajQ8JczO8jirA==' 'unsafe-eval';
-  ...
-`;
+    return [
+      {
+        source: "/(.*)",
+        headers: [
+          {
+            key: "Content-Security-Policy",
+            value: `default-src 'self'; img-src 'self' data: https://cdn.jsdelivr.net; script-src ${scriptSrc}; style-src ${styleSrc}; connect-src 'self';`,
+          },
+        ],
+      },
+    ];
+  },
+};
 
-    response.headers.set('X-NONCE', nonce);
-
-    return response;
-}
+export default nextConfig;
