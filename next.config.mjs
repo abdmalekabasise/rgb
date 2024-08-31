@@ -13,17 +13,14 @@ const nextConfig = {
     ],
   },
   async headers() {
-    const nonce = crypto.randomBytes(16).toString('base64');
-    const scriptSrc = process.env.NODE_ENV === 'development'
-      ? `'self' 'nonce-${nonce}' 'unsafe-eval'`
-      : `'self' 'nonce-${nonce}'`;
+    // Note: Nonce will be set in middleware, not here, to ensure consistency.
     return [
       {
         source: "/(.*)",
         headers: [
           {
             key: "Content-Security-Policy",
-            value: `default-src 'self'; connect-src 'self' http://localhost:5000; img-src 'self' data: https://cdn.jsdelivr.net; script-src ${scriptSrc}; style-src 'self' 'nonce-${nonce}' 'unsafe-eval';`,
+            value: `default-src 'self'; connect-src 'self' http://localhost:5000; img-src 'self' data: https://cdn.jsdelivr.net; script-src 'self'; style-src 'self';`,
           },
         ],
       },

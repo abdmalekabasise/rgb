@@ -1,17 +1,14 @@
 import { NextResponse } from 'next/server';
 
 export function middleware(req) {
-    // Generate a nonce using the Web Crypto API
-    const array = new Uint8Array(16);
-    crypto.getRandomValues(array);
-    const nonce = btoa(String.fromCharCode(...array));
+    const nonce = crypto.randomBytes(16).toString('base64');
 
     const response = NextResponse.next();
 
-    // Set the Content Security Policy header
+    // Set the Content Security Policy header with the generated nonce
     response.headers.set(
         'Content-Security-Policy',
-        `default-src 'self'; img-src 'self' data: https://cdn.jsdelivr.net; font-src 'self' data:; script-src 'self' 'nonce-${nonce}'; style-src 'self' 'unsafe-inline'; connect-src 'self' http://localhost:5000;`
+        `default-src 'self'; img-src 'self' data: https://cdn.jsdelivr.net; font-src 'self' data:; script-src 'self' 'nonce-${nonce}' 'unsafe-eval'; style-src 'self' 'nonce-${nonce}'; connect-src 'self' http://localhost:5000;`
     );
 
     // Set the nonce in a custom header for potential client-side use
