@@ -33,16 +33,15 @@ export const forgotPassword = async (body) => {
 
 }
 export const userIsLoggedIn = () => {
-    const token = localStorage.getItem('token');
-    if (token) {
-        const decodedToken = decodeToken(token);
-        console.log('Decoded Token:', decodedToken);
-        return decodeToken ? true : false;
+    if (typeof window !== 'undefined') {
+        const token = localStorage.getItem('token');
+        if (token) {
+            const decodedToken = decodeToken(token);
+            console.log('Decoded Token:', decodedToken);
+            return decodedToken ? true : false;
+        }
     }
     return false;
-
-
-
 }
 const decodeToken = (token) => {
     try {
