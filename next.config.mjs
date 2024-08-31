@@ -13,24 +13,25 @@ const nextConfig = {
     ],
   },
   async headers() {
-    // Note: Nonce will be set in middleware, not here, to ensure consistency.
+    const nonce = crypto.randomBytes(16).toString('base64');
+
+    // Define script-src directive
+    const scriptSrc = process.env.NODE_ENV === 'development'
+      ? `'self' 'nonce-${nonce}' 'unsafe-eval'`
+      : `'self' 'nonce-${nonce}'`;
+
+    // Define style-src directive, ensuring nonce is included
+    const styleSrc = `'self' 'nonce-${nonce}'`;
+
     return [
       {
         source: "/(.*)",
         headers: [
           {
             key: "Content-Security-Policy",
-            value: `default-src 'self'; connect-src 'self' http://localhost:5000; img-src 'self' data: https://cdn.jsdelivr.net; script-src 'self'; style-src 'self';`,
+            value: `default-src 'self'; img-src 'self' data: https://cdn.jsdelivr.net; script-src ${scriptSrc}; style-src ${styleSrc}; connect-src 'self';`,
           },
         ],
-      },
-    ];
-  },
-  async rewrites() {
-    return [
-      {
-        source: '/api/:path*',
-        destination: 'http://localhost:5000/api/:path*', // Proxy to Backend
       },
     ];
   },
