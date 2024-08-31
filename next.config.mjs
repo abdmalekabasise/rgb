@@ -29,7 +29,7 @@ const nextConfig = {
         headers: [
           {
             key: "Content-Security-Policy",
-            value: `default-src 'self'; img-src 'self' data: https://cdn.jsdelivr.net; script-src ${scriptSrc}; style-src ${styleSrc}; connect-src 'self';`,
+            value: `img-src 'self' data: https://cdn.jsdelivr.net; script-src ${scriptSrc}; style-src ${styleSrc}; connect-src 'self';`,
           },
         ],
       },
